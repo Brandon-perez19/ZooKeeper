@@ -6,10 +6,20 @@ const PORT = process.env.PORT || 3001;
 //assign expresss to app variable to chain methods later
 const app = express();
 
+
+//express middleware start
+//===================================
+//allows for front-end resources to be loaded by server
+app.use(express.static('public'));
+
 //parse incoming string or array data
 app.use(express.urlencoded({ extended: true}));
+
 //parse incoming JSON data
 app.use(express.json());
+
+//=======================================
+//express middleware end
 
 function filterByQuery(query, animalsArray){
     let personalityTraitsArray = [];
@@ -114,6 +124,26 @@ app.post('/api/animals', (req, res) => {
         const animal = createNewAnimal(req.body, animals);
         res.json(animal);
     }
+});
+
+//serves the index.html aka homepage
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+})
+
+//serves animals.html
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+//serves zookeeper.html 
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+//wildcard routes. Any route not defined will be redirected to index.html. Should always come last!
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
 app.listen(PORT, () => {
